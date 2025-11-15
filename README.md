@@ -161,7 +161,7 @@ Open the asset and check `Apply Recursively` and `Label Assets in My Directory`,
 
 ![Paking-Step-3](Docs/Images/Paking-Step-3.png)
 
-Enter a number between `1` and `999` in this chunk Id field and press Ok. **Do not enter 0 for the Id!**
+Enter a number between `1` and `300` in this chunk Id field and press Ok. **Do not enter 0 for the Id!**
 
 > [!IMPORTANT]
 > Each mod **must** use a seperate pak chunk number to get packaged seperately from each other! Take note of each pak chunk Id you are assigning to files in each mod.
