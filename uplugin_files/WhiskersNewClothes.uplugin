@@ -1,0 +1,6 @@
+{
+    "Name" : "Whiskers' New Clothes",
+    "Description" : "Adds clothes to Whiskers (via their hat mesh). Clothes can be assigned at random or be faithfully green to follow the icons. Whiskers will wear specific clothing if they wear either Woven or Tailored Clothes, and as long as they have the related modifier.",
+    "Version" : "1.0",
+    "CreatedBy" : "Lickorice (Carlos Panganiban)"
+}
