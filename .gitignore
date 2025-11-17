@@ -39,3 +39,8 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# Putting this here temporarily to avoid committing
+Binaries/
+Plugins/
+Windows/
