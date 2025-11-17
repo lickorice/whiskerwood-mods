@@ -12,4 +12,4 @@ Under `Content/Mods`, you'll find the raw stuff there for the following (in orde
 
 These mods above were packaged via **manual chunk ID assignment as-is**.
 
-Feel free to load these into the Unreal Editor and tinker with them yourself!
+Feel free to load the project into the Unreal Editor and tinker with them yourself!
