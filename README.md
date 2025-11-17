@@ -20,12 +20,17 @@ As you can see, each mod has its own folder, then there are one or both of:
 
 So, to make your own mod:
 
-1. Inside of `Content/Mods`, make a new folder with your mod's name, ideally in UpperCamelCase. You can rename the mod folder later if you want.
+1. Inside of `Content/Mods`, make a new folder with your mod's name, ideally in UpperCamelCase. 
 2. Create a new blueprint with base `Actor` in the mod's folder you created and call it it one of the above two names, depending on what you want to do.
+
+> [!IMPORTANT]
+> Although you can change your mod's folder name later, it is **critical** that your mod folder name is the same name as your installed mod's folder and `.pak` file as the game will look for the folder name in the `.pak` file when it loads it!
 
 ## ModAPI
 
 The modding API provided by the game is pretty special, because the lead developer of Whiskerwood has added some awesome functions and delegates that help make modding easier. The game is also really moddable, because the game's architecture is using [data driven gameplay](https://dev.epicgames.com/documentation/en-us/unreal-engine/data-driven-gameplay-elements-in-unreal-engine?application_version=5.6) - much of the "hardcoded" values are actually in [Data Tables](https://dev.epicgames.com/documentation/en-us/unreal-engine/data-driven-gameplay-elements-in-unreal-engine?application_version=5.6#datatables)!
+
+### Properties
 
 These are available properties that allows you to get references to some of the core game systems.
 
@@ -39,6 +44,8 @@ UPROPERTY(EditAnywhere)
 UPROPERTY(EditAnywhere)
     FModApiState state;
 ```
+
+### Functions
 
 These are functions that can be called. This extract includes developer comments.
 
@@ -98,9 +105,15 @@ UFUNCTION(BlueprintCallable, meta = (WorldContext = "worldContext"), Category = 
     FString ReadModTextFile(class UObject *worldContext, FString modName, FString filename);
 ```
 
+### Delegates
+
 These are delegates that you can bind to in your mod, then fire an event from that.
 
 ```cpp
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FModAPI_OnEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FModAPI_OnActorSpawned, AActor *, actor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FModAPI_OnOptionChange, FString, optionId, FString, value);
+
 UPROPERTY(BlueprintAssignable)
     FModAPI_OnEvent onLoadingFinished;
 UPROPERTY(BlueprintAssignable)
@@ -132,29 +145,40 @@ It simply checks if the returned `OptionId` is the one used by the mod, and if i
 
 In this project, we use pak chunks to package your mod files into `.pak` mods.
 
-In the editor, first select all the assets in your mod's folder (shift click or ctrl click, standard stuff works), then right click the highlighted assets and hover over `Asset Actions` -> `Assign to Chunk...` and click on it.
+In your mod folder, right click and select **Miscellaneous > Data Asset**:
+
+![Paking-Step-0](Docs/Images/Paking-Step-0.png)
+
+Now search for and select `Primary Asset Label`.
 
 ![Paking-Step-1](Docs/Images/Paking-Step-1.png)
 
-Enter a number between `1` and `999` in this chunk Id field and press Ok. **Do not enter 0 for the Id!**
-
-> [!IMPORTANT]
-> Each mod must use a seperate pak chunk number to get packaged seperately from each other! Take note of each pak chunk Id you are assigning to files in each mod.
+To follow standard UE naming conventions, call it `PAL_yourmodname` e.g. `PAL_DemoMod`.
 
 ![Paking-Step-2](Docs/Images/Paking-Step-2.png)
 
-> [!NOTE]
-> You only have to do this chunk Id assignment once, but you do need to assign newly added assets in the mod folder, or if you rename existing assets (I am working on better workflow for this).
+Open the asset and check `Apply Recursively` and `Label Assets in My Directory`, like so.
+
+![Paking-Step-3](Docs/Images/Paking-Step-3.png)
+
+Enter a number between `1` and `300` in this chunk Id field and press Ok. **Do not enter 0 for the Id!**
+
+> [!IMPORTANT]
+> Each mod **must** use a seperate pak chunk number to get packaged seperately from each other! Take note of each pak chunk Id you are assigning to files in each mod.
+
+![Paking-Step-4](Docs/Images/Paking-Step-4.png)
+
+This PAL is a good pal, because it will automatically assign all files in your mod folder with the chunk Id you set for it. It does not get packaged into the game (unless you explicitly tell it to), as it's just a tool for the editor.
 
 Now do `Ctrl` + `S` to save.
 
 Simply click on to `Platforms` -> `Windows` -> `Package Project`:
 
-![Paking-Step-3](Docs/Images/Paking-Step-3.png)
+![Paking-Step-5](Docs/Images/Paking-Step-5.png)
 
 Now select the output folder location. It doesn't matter much where you put it, so I always just put it into the template project folder. It will create a `Windows` folder. You don't need to delete this folder between packages.
 
-![Paking-Step-4](Docs/Images/Paking-Step-4.png)
+![Paking-Step-6](Docs/Images/Paking-Step-6.png)
 
 The first time you package it might take a while, as it will likely need to compile some shaders.
 
@@ -162,7 +186,7 @@ Once it is done, you will hear a noise and it will say Packaging complete.
 
 Now navigate to the `Windows/Whiskerwood/Content/Paks` folder, you should see al pakchunk files here. There will always be a `pakchunk0` which contains all other packaged editor assets, and it is quite large, so this is why you mustn't set your chunkId to 0.
 
-![Paking-Step-5](Docs/Images/Paking-Step-5.png)
+![Paking-Step-7](Docs/Images/Paking-Step-7.png)
 
 ## Installing the packaged mod
 
@@ -174,7 +198,17 @@ Now paste your `.pak` file into the mod folder.
 
 Rename the `.pak` file to the same name as the mod folder, keeping the `.pak` extension.
 
-Now your mod is installed! You should also make a `.uplugin` file (you could copy one from one of the example mods) and fill in the details, but this is not strictly necessary right now.
+Now your mod is installed! You should also make a `<yourmodname>.uplugin` file and fill in the details, but this is not strictly necessary right now.
+
+Here is an example one:
+```json
+{
+    "Name" : "Prettier Path",
+    "Description" : "Makes the stone path look prettier!",
+    "Version" : "1.0",
+    "CreatedBy" : "Buckminsterfullerene"
+}
+```
 
 ## Automating the installation
 
