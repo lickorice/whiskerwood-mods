@@ -47,7 +47,3 @@ Plugins/**/Intermediate/*
 DerivedDataCache/*
 
 Content/_TempFiles/*
-# Putting this here temporarily to avoid committing
-Binaries/
-Plugins/
-Windows/
